@@ -1,0 +1,30 @@
+# The language in this case has no bearing - we are going to be making use of conda.
+language: generic
+
+os: osx
+
+# Set BINSTAR_TOKEN
+env:
+    global:
+        secure: "QMX5g9x0OJiwYo2dBSME9K7wIkDFdwIZ+NUp0jxVnxcexhj7iu+FxEFkC6nk6VUOzJcPGFVH5g0s84BLMh7jQJ5ZZVbVDwpvxnVf6lrCZxILtwtRbBb5W04UTAlttkYY15U/a09Zl/ztdaFXyqHe97O6xyKbVBmKTeB0BSoP9/2W48Keq8RH+sKj+xPkrcTvItztNF1twRBlxXSB8ntbm/6U1WPxpqNOuEsuMOQd+1vhUxD8fvUlZ5Pil/AIqbqtJFQsaAE255W+xmB4eUn5shgJaAQ+XLQ0qlCiRORXHEmRUzxfR90wZ/4OAghsE2LVSjKIL+esPDEdD+J0ZBkEkPApuA9wFxfYielYIC+npil2J7T2Xl6Wli4KxgNuut3lOnM3vJD02d+jcXsvyQJbsklZq+U4Tws2myFCbmr1SloxRNeL9Y6rcwAEYFvuezlAUvsPuo2AohbRKGiBIzaivBqk6V0/nQC+4hZarJikZBnhMe2kwTdE2O2r7unC/YB6q6FJWyzxH5el2obY+upRd79PlF6KgXY+wddDEtxf+7bgUF8GAOqD92M9hvldKm2AbHnE7sldjJtHBbXbOTBVvhnNj3qWesSZkdonuQch7tvvo27QO+1RggKf2bCt4EFcOBpUGsfRuDwyt0oyZkvy1Q3fDfNl8HaltQj1NTQME5I="
+
+
+before_install:
+    # Remove homebrew.
+    - |
+      echo ""
+      echo "Removing homebrew from Travis CI to avoid conflicts."
+      curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall > ~/uninstall_homebrew
+      chmod +x ~/uninstall_homebrew
+      ~/uninstall_homebrew -fq
+      rm ~/uninstall_homebrew
+
+install:
+    # Install Miniconda.
+    - ./install_miniconda.sh
+
+script:
+    - source ~/miniconda/bin/activate root
+    - conda build ./recipe
+    # from https://github.com/conda-forge/conda-forge-build-setup-feedstock/blob/master/recipe/upload_or_check_non_existence.py
+    - ./upload_or_check_non_existence ./recipe sebp --channel=main
