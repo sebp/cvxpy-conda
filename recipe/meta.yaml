@@ -1,6 +1,6 @@
 {% set name = "cvxpy" %}
-{% set version = "0.4.11" %}
-{% set sha256 = "7523651f2c9a7a8f3b8e87038d6869c8d7f2bfa74dd3aadc71735f07c2f6eed2" %}
+{% set version = "1.0.15" %}
+{% set sha256 = "dff246a3fa03fe5c815f290825345a6ad5ff49df5e1882f123e632a4217bbcd1" %}
 
 package:
   name: {{ name|lower }}
@@ -29,71 +29,54 @@ build:
   # If this is a new build for the same version, increment the build
   # number. If you do not include this key, it defaults to 0.
   number: 0
-  script: python setup.py install --single-version-externally-managed --record=record.txt
 
-requirements:
-  build:
-    - python
-    - setuptools
-    - ecos >=2
-    - scs >=1.1.3
-    - multiprocess
-    - fastcache
-    - six
-    - toolz
-    - numpy >=1.9
-    - scipy >=0.15
-    - cvxcanon >=0.0.22
-
-  run:
-    - python
-    - ecos >=2
-    - scs >=1.1.3
-    - multiprocess
-    - fastcache
-    - six
-    - toolz
-    - numpy >=1.9
-    - scipy >=0.15
-    - cvxcanon >=0.0.22
-
-test:
-  # Python imports
-  imports:
-    - cvxpy
-    - cvxpy.atoms
-    - cvxpy.atoms.affine
-    - cvxpy.atoms.elementwise
-    - cvxpy.constraints
-    - cvxpy.expressions
-    - cvxpy.expressions.constants
-    - cvxpy.expressions.variables
-    - cvxpy.interface
-    - cvxpy.interface.numpy_interface
-    - cvxpy.lin_ops
-    - cvxpy.problems
-    - cvxpy.problems.problem_data
-    - cvxpy.problems.solvers
-    - cvxpy.tests
-    - cvxpy.transforms
-    - cvxpy.utilities
-
-  # commands:
-    # You can put test commands to be run here.  Use this to test that the
-    # entry points work.
-    # - nosetests cvxpy
-
-  # You can also put a file called run_test.py in the recipe that will be run
-  # at test time.
-
-  # requires:
-    # Put any additional test requirements here.  For example
-    # - nose
+outputs:
+  - name: cvxpy
+    requirements:
+      host:
+        - python
+      run:
+        - python
+        - {{ pin_subpackage('cvxpy-base', exact=True) }}
+    test:
+      imports:
+        - cvxpy
+        - cvxpy.cvxcore
+        - cvxpy.cvxcore.python
+      requires:
+        - nose
+      commands:
+        - nosetests cvxpy
+  - name: cvxpy-base
+    build:
+      script: python setup.py install --single-version-externally-managed --record=record.txt
+    requirements:
+      build:
+        - {{ compiler('c') }}
+        - {{ compiler('cxx') }}
+      host:
+        - python
+        - numpy 1.14
+        - pip
+      run:
+        - python
+        - {{ pin_compatible('numpy') }}
+        - osqp
+        - ecos >=2
+        - scs >=1.1.3
+        - scipy >=1.1.0
+        - multiprocess
+        - fastcache
+        - six
 
 about:
-  home: http://github.com/cvxgrp/cvxpy/
-  license: GPLv3
+  home: https://www.cvxpy.org/
+  license: GPL-3.0
+  license_family: GPL
+  license_file: LICENSE
   summary: 'A domain-specific language for modeling convex optimization problems in Python.'
+  doc_url: https://www.cvxpy.org/
+  dev_url: http://github.com/cvxgrp/cvxpy/
 
 # See
 # http://docs.continuum.io/conda/build.html for
