@@ -1,6 +1,6 @@
 {% set name = "cvxpy" %}
-{% set version = "1.0.15" %}
-{% set sha256 = "dff246a3fa03fe5c815f290825345a6ad5ff49df5e1882f123e632a4217bbcd1" %}
+{% set version = "1.0.29" %}
+{% set sha256 = "0cca1a09ec24b8bdfe80f3448b968eae7a8d72a45f938c0a284851c632a4d58d" %}
 
 package:
   name: {{ name|lower }}
@@ -49,19 +49,20 @@ outputs:
         - nosetests cvxpy
   - name: cvxpy-base
     build:
-      script: python setup.py install --single-version-externally-managed --record=record.txt
+      script: python -m pip install . --no-deps --ignore-installed --no-use-pep517 -vvv
     requirements:
       build:
         - {{ compiler('c') }}
         - {{ compiler('cxx') }}
       host:
         - python
-        - numpy 1.14
+        - numpy 1.15  # [py<38]
+        - numpy 1.17  # [py>=38]
         - pip
       run:
         - python
         - {{ pin_compatible('numpy') }}
-        - osqp
+        - osqp >=0.4.1
         - ecos >=2
         - scs >=1.1.3
         - scipy >=1.1.0
